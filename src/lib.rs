@@ -150,6 +150,49 @@ impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
 impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 
 
+/*
+#include #include <stdlib.h>
+
+bindgen --rustfmt-bindings \
+    --no-layout-tests \
+    --generate-inline-functions \
+    --disable-name-namespacing \
+    --no-prepend-enum-name \
+    --builtins=false include/pfring_utils.h > pfring_utils.rs
+
+bindgen --rustfmt-bindings \
+     --no-layout-tests \
+     --generate-inline-functions \
+     --disable-name-namespacing \
+     --no-prepend-enum-name \
+     include/pfring_ft.h > pfring_ft.rs
+
+bindgen --rustfmt-bindings \
+     --no-layout-tests \
+     --generate-inline-functions \
+     --disable-name-namespacing \
+     --no-prepend-enum-name \
+     include/pfring_mod_sysdig.h > pfring_mod_sysdig.rs
+
+bindgen --rustfmt-bindings \
+     --no-layout-tests \
+     --generate-inline-functions \
+     --disable-name-namespacing \
+     --no-prepend-enum-name \
+     include/pfring_zc.h > pfring_zc.rs
+
+bindgen --rustfmt-bindings \
+     --no-layout-tests \
+     --generate-inline-functions \
+     --disable-name-namespacing \
+     --no-prepend-enum-name \
+     include/linux/pf_ring.h > linux_pf_ring.rs
+
+--builtins=false
+--use-core
+
+*/
+
 #[cfg(test)]
 mod tests {
     use std::ffi::CStr;

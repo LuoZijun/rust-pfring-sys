@@ -3,7 +3,7 @@ use crate::pfring::{ pfring, pfring_stat, };
 
 use crate::linux::pf_ring::{ pfring_pkthdr, socket_mode, };
 
-use crate::libc::{ c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, };
+use crate::libc::{ self, c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, };
 
 
 pub const RING_BUF_SIZE: u32 = 8388608;
@@ -248,7 +248,7 @@ pub const SYSDIG_EXIT: sysdig_syscall_mode = 1;
 #[derive(Debug, Copy, Clone)]
 pub struct sysdig_param_info {
     #[doc = "< Paramter name, e.g. \'size\'."]
-    pub name: [::std::os::raw::c_char; 32usize],
+    pub name: [libc::c_char; 32usize],
     #[doc = "< Paramter type, e.g. \'u_int16\', \'string\'..."]
     pub type_: sysdig_param_type,
     #[doc = "< If this is a numeric parameter, this flag specifies if it should be rendered as decimal or hex."]
@@ -260,7 +260,7 @@ pub struct sysdig_event_info {
     #[doc = "< Event mode (enter or exit)."]
     pub mode: sysdig_syscall_mode,
     #[doc = "< Name."]
-    pub name: [::std::os::raw::c_char; 32usize],
+    pub name: [libc::c_char; 32usize],
     #[doc = "< Number of parameter in the params array."]
     pub nparams: uint32_t,
     #[doc = "< parameters descriptions."]
@@ -280,8 +280,8 @@ pub struct sysdig_ring_info {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct pfring_sysdig_device {
-    pub fd: ::std::os::raw::c_int,
-    pub ring_mmap: *mut ::std::os::raw::c_char,
+    pub fd: libc::c_int,
+    pub ring_mmap: *mut libc::c_char,
     pub ring_info: *mut sysdig_ring_info,
     pub last_evt_read_len: uint32_t,
 }
@@ -303,14 +303,14 @@ pub struct sysdig_event_header {
 
 
 extern "C" {
-    pub fn pfring_mod_sysdig_open(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_mod_sysdig_open(ring: *mut pfring) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_close(ring: *mut pfring);
 
     pub fn pfring_mod_sysdig_stats(
         ring: *mut pfring,
         stats: *mut pfring_stat,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_recv(
         ring: *mut pfring,
@@ -318,36 +318,36 @@ extern "C" {
         buffer_len: c_uint,
         hdr: *mut pfring_pkthdr,
         wait_for_incoming_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_poll(ring: *mut pfring, wait_duration: c_uint)
-        -> ::std::os::raw::c_int;
+        -> libc::c_int;
 
-    pub fn pfring_mod_sysdig_enable_ring(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_mod_sysdig_enable_ring(ring: *mut pfring) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_set_socket_mode(
         ring: *mut pfring,
         mode: socket_mode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_set_poll_watermark(
         ring: *mut pfring,
         watermark: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_get_bound_device_ifindex(
         ring: *mut pfring,
-        if_index: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        if_index: *mut libc::c_int,
+    ) -> libc::c_int;
 
     pub fn pfring_mod_sysdig_set_bpf_filter(
         ring: *mut pfring,
-        filter_buffer: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        filter_buffer: *mut libc::c_char,
+    ) -> libc::c_int;
 
-    pub fn pfring_mod_sysdig_remove_bpf_filter(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_mod_sysdig_remove_bpf_filter(ring: *mut pfring) -> libc::c_int;
 
-    pub fn sysdig_event2name(event_type: sysdig_event_type) -> *mut ::std::os::raw::c_char;
+    pub fn sysdig_event2name(event_type: sysdig_event_type) -> *mut libc::c_char;
 
     pub fn sysdig_event2info(event_type: sysdig_event_type) -> *const sysdig_event_info;
 }

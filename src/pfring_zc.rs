@@ -5,7 +5,7 @@ use crate::linux::pf_ring::{
     hw_filtering_rule,
 };
 
-use crate::libc::{ c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, };
+use crate::libc::{ self, c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, };
 
 pub const PF_RING_ZC_DEVICE_ASYMMETRIC_RSS: u32 = 1;
 pub const PF_RING_ZC_DEVICE_FIXED_RSS_Q_0: u32 = 2;
@@ -27,11 +27,11 @@ pub const PF_RING_ZC_PKT_FLAGS_FLOW_OFFLOAD_UPDATE: u32 = 64;
 pub const PF_RING_ZC_PKT_FLAGS_FLOW_OFFLOAD_PACKET: u32 = 128;
 pub const PF_RING_ZC_PKT_FLAGS_FLOW_OFFLOAD_MARKER: u32 = 256;
 
-pub type pfring_zc_cluster = ::std::os::raw::c_void;
-pub type pfring_zc_queue = ::std::os::raw::c_void;
-pub type pfring_zc_buffer_pool = ::std::os::raw::c_void;
-pub type pfring_zc_worker = ::std::os::raw::c_void;
-pub type pfring_zc_multi_queue = ::std::os::raw::c_void;
+pub type pfring_zc_cluster = libc::c_void;
+pub type pfring_zc_queue = libc::c_void;
+pub type pfring_zc_buffer_pool = libc::c_void;
+pub type pfring_zc_worker = libc::c_void;
+pub type pfring_zc_multi_queue = libc::c_void;
 
 
 #[doc = "< RX only mode."]
@@ -128,7 +128,7 @@ extern "C" {
         metadata_len: uint32_t,
         tot_num_buffers: uint32_t,
         numa_node_id: i32,
-        hugepages_mountpoint: *const ::std::os::raw::c_char,
+        hugepages_mountpoint: *const libc::c_char,
     ) -> *mut pfring_zc_cluster;
 }
 extern "C" {
@@ -145,7 +145,7 @@ extern "C" {
     #[doc = " @return            The queue handle on success, NULL otherwise (errno is set appropriately)."]
     pub fn pfring_zc_open_device(
         cluster: *mut pfring_zc_cluster,
-        device_name: *const ::std::os::raw::c_char,
+        device_name: *const libc::c_char,
         queue_mode: pfring_zc_queue_mode,
         flags: uint32_t,
     ) -> *mut pfring_zc_queue;
@@ -170,7 +170,7 @@ extern "C" {
         queue: *mut pfring_zc_queue,
         pkt_handle: *mut *mut pfring_zc_pkt_buff,
         wait_for_incoming_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Read a burst of packets from the queue."]
@@ -184,13 +184,13 @@ extern "C" {
         pkt_handles: *mut *mut pfring_zc_pkt_buff,
         max_num_packets: uint32_t,
         wait_for_incoming_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Check if the queue is empty (rx only for devices)."]
     #[doc = " @param queue The queue handle."]
     #[doc = " @return      1 on empty queue, 0 otherwise."]
-    pub fn pfring_zc_queue_is_empty(queue: *mut pfring_zc_queue) -> ::std::os::raw::c_int;
+    pub fn pfring_zc_queue_is_empty(queue: *mut pfring_zc_queue) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Break the receive loop in case of blocking pfring_zc_recv_pkt()/pfring_zc_recv_pkt_burst()."]
@@ -207,7 +207,7 @@ extern "C" {
         queue: *mut pfring_zc_queue,
         pkt_handle: *mut *mut pfring_zc_pkt_buff,
         flush_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Send a burst of packets to the queue."]
@@ -221,13 +221,13 @@ extern "C" {
         pkt_handles: *mut *mut pfring_zc_pkt_buff,
         num_packets: uint32_t,
         flush_packets: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Check if the queue is full (tx only for devices)."]
     #[doc = " @param queue The queue handle."]
     #[doc = " @return      1 on full queue, 0 otherwise."]
-    pub fn pfring_zc_queue_is_full(queue: *mut pfring_zc_queue) -> ::std::os::raw::c_int;
+    pub fn pfring_zc_queue_is_full(queue: *mut pfring_zc_queue) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Sync/flush a queue."]
@@ -242,14 +242,14 @@ extern "C" {
     #[doc = " @return       0 on success, a negative value otherwise."]
     pub fn pfring_zc_set_bpf_filter(
         queue: *mut pfring_zc_queue,
-        filter: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        filter: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove the BPF filter."]
     #[doc = " @param queue  The queue handle."]
     #[doc = " @return       0 on success, a negative value otherwise."]
-    pub fn pfring_zc_remove_bpf_filter(queue: *mut pfring_zc_queue) -> ::std::os::raw::c_int;
+    pub fn pfring_zc_remove_bpf_filter(queue: *mut pfring_zc_queue) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Add an hw filtering rule to the network device, when the queue is bound to a supported card."]
@@ -259,7 +259,7 @@ extern "C" {
     pub fn pfring_zc_add_hw_rule(
         queue: *mut pfring_zc_queue,
         rule: *mut hw_filtering_rule,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove an hw filtering rule from the network device."]
@@ -269,7 +269,7 @@ extern "C" {
     pub fn pfring_zc_remove_hw_rule(
         queue: *mut pfring_zc_queue,
         rule_id: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Change the hw RSS indirection table (RETA) for Intel igb/ixgbe-based cards."]
@@ -312,7 +312,7 @@ extern "C" {
     pub fn pfring_zc_stats(
         queue: *mut pfring_zc_queue,
         stats: *mut pfring_zc_stat,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Allocate a buffer from global resources."]
@@ -354,7 +354,7 @@ extern "C" {
         pkt_handle: *mut *mut pfring_zc_pkt_buff,
         queues_mask: uint64_t,
         flush_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 #[doc = "< Round-Robin policy."]
 pub const round_robin_policy: pfring_zc_recv_policy = 0;
@@ -371,7 +371,7 @@ pub type pfring_zc_distribution_func = ::std::option::Option<
     unsafe extern "C" fn(
         pkt_handle: *mut pfring_zc_pkt_buff,
         in_queue: *mut pfring_zc_queue,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     ) -> i64,
 >;
 #[doc = " The idle callback prototype."]
@@ -399,7 +399,7 @@ extern "C" {
         recv_policy: pfring_zc_recv_policy,
         callback: pfring_zc_idle_callback,
         func: pfring_zc_distribution_func,
-        user_data: *mut ::std::os::raw::c_void,
+        user_data: *mut libc::c_void,
         active_wait: uint32_t,
         core_id_affinity: i32,
     ) -> *mut pfring_zc_worker;
@@ -425,7 +425,7 @@ extern "C" {
         recv_policy: pfring_zc_recv_policy,
         callback: pfring_zc_idle_callback,
         func: pfring_zc_distribution_func,
-        user_data: *mut ::std::os::raw::c_void,
+        user_data: *mut libc::c_void,
         active_wait: uint32_t,
         core_id_affinity: i32,
     ) -> *mut pfring_zc_worker;
@@ -450,7 +450,7 @@ extern "C" {
         working_set_pool: *mut pfring_zc_buffer_pool,
         callback: pfring_zc_idle_callback,
         func: pfring_zc_distribution_func,
-        user_data: *mut ::std::os::raw::c_void,
+        user_data: *mut libc::c_void,
         active_wait: uint32_t,
         core_id_affinity_sorter: i32,
         core_id_affinity_timer: i32,
@@ -491,7 +491,7 @@ extern "C" {
 extern "C" {
     #[doc = " Initialise the inter-process support on a slave."]
     #[doc = " @param hugepages_mountpoint The HugeTLB mountpoint (NULL for auto-detection) for the shared memory."]
-    pub fn pfring_zc_ipc_init(hugepages_mountpoint: *const ::std::os::raw::c_char);
+    pub fn pfring_zc_ipc_init(hugepages_mountpoint: *const libc::c_char);
 }
 extern "C" {
     #[doc = " Attach to a pool created by a cluster in another process."]
@@ -532,19 +532,19 @@ extern "C" {
     #[doc = " @return                       0 on success, a negative value otherwise."]
     pub fn pfring_zc_vm_register(
         cluster: *mut pfring_zc_cluster,
-        vm_monitor_socket_path: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        vm_monitor_socket_path: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " (Host) Enable the KVM support for all the VMs registered with pfring_zc_vm_register()."]
     #[doc = " @param cluster The cluster handle."]
     #[doc = " @return        0 on success, a negative value otherwise."]
-    pub fn pfring_zc_vm_backend_enable(cluster: *mut pfring_zc_cluster) -> ::std::os::raw::c_int;
+    pub fn pfring_zc_vm_backend_enable(cluster: *mut pfring_zc_cluster) -> libc::c_int;
 }
 extern "C" {
     #[doc = " (Guest) Initialise the inter-VM support on a slave."]
     #[doc = " @param uio_device The UIO device path for the shared memory."]
-    pub fn pfring_zc_vm_guest_init(uio_device: *const ::std::os::raw::c_char);
+    pub fn pfring_zc_vm_guest_init(uio_device: *const libc::c_char);
 }
 extern "C" {
     #[doc = " Computes an IP-based packet hash."]
@@ -602,8 +602,8 @@ extern "C" {
     #[doc = " @return        0 on success, a negative value otherwise."]
     pub fn pfring_zc_set_proc_stats(
         cluster: *mut pfring_zc_cluster,
-        stats: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        stats: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Write application name under /proc/net/pf_ring/<socket>"]
@@ -611,8 +611,8 @@ extern "C" {
     #[doc = " @return      0 on success, a negative value otherwise."]
     pub fn pfring_zc_set_app_name(
         cluster: *mut pfring_zc_cluster,
-        name: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        name: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Write custom device stats under /proc/net/pf_ring/stats/<device file>"]
@@ -621,8 +621,8 @@ extern "C" {
     #[doc = " @return      0 on success, a negative value otherwise."]
     pub fn pfring_zc_set_device_proc_stats(
         queue: *mut pfring_zc_queue,
-        stats: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        stats: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Write application name under /proc/net/pf_ring/<socket>"]
@@ -631,18 +631,18 @@ extern "C" {
     #[doc = " @return      0 on success, a negative value otherwise."]
     pub fn pfring_zc_set_device_app_name(
         queue: *mut pfring_zc_queue,
-        name: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        name: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the ZC version"]
     #[doc = " @return The PF_RING ZC version."]
-    pub fn pfring_zc_version() -> *mut ::std::os::raw::c_char;
+    pub fn pfring_zc_version() -> *mut libc::c_char;
 }
 extern "C" {
     #[doc = " Check if ZC is running in demo mode (using adapters in zero-copy mode without a valid license)"]
     #[doc = " @return 1 if ZC is running with no demo limit, 0 otherwise."]
-    pub fn pfring_zc_check_license() -> ::std::os::raw::c_int;
+    pub fn pfring_zc_check_license() -> libc::c_int;
 }
 extern "C" {
     #[doc = " Check if the license for a ZC device is valid and returns the license expiration epoch."]
@@ -652,7 +652,7 @@ extern "C" {
     pub fn pfring_zc_check_device_license(
         queue: *mut pfring_zc_queue,
         expiration_epoch: *mut uint32_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Check if the license for a ZC device is valid and returns the license expiration epoch."]
@@ -660,23 +660,23 @@ extern "C" {
     #[doc = " @param expiration_epoch The variable (ptr) that will contain the expiration epoch as return value."]
     #[doc = " @return 1 if the license is valid, and set the expiration epoch accordingly, 0 otherwise."]
     pub fn pfring_zc_check_device_license_by_name(
-        device_name: *mut ::std::os::raw::c_char,
+        device_name: *mut libc::c_char,
         expiration_epoch: *mut uint32_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the NUMA node bound to the selected core"]
     #[doc = " @param core_id The core id"]
     #[doc = " @return        node id on success, -1 otherwise."]
-    pub fn pfring_zc_numa_get_cpu_node(core_id: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn pfring_zc_numa_get_cpu_node(core_id: libc::c_int) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the NUMA affinity to the selected NUMA node (for memory allocation)"]
     #[doc = " @param node_id The NUMA node id"]
     #[doc = " @return        0 on success, -1 otherwise."]
     pub fn pfring_zc_numa_set_numa_affinity(
-        node_id: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        node_id: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Enable debug mode"]

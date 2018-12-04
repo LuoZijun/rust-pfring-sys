@@ -1,5 +1,5 @@
 use crate::{ __BindgenBitfieldUnit, __IncompleteArrayField, };
-use crate::libc::{ uint8_t, uint16_t, uint32_t, };
+use crate::libc::{ self, uint8_t, uint16_t, uint32_t, };
 
 
 #[repr(C)]

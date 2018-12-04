@@ -1,7 +1,7 @@
 use crate::{ __BindgenBitfieldUnit, __IncompleteArrayField, };
-use crate::libc::{ c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, time_t, timeval, };
+use crate::libc::{ c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, time_t, };
 
-use crate::libc::{ in6_addr,  };
+use crate::libc::{ self, timeval, in6_addr,  };
 
 
 pub const RING_MAGIC_VALUE: u32 = 136;
@@ -313,7 +313,7 @@ pub struct filtering_rule_core_fields__bindgen_ty_1 {
 pub struct filtering_rule_extended_fields {
     pub optional_fields: uint16_t,
     pub tunnel: filtering_rule_extended_fields__bindgen_ty_1,
-    pub payload_pattern: [::std::os::raw::c_char; 32usize],
+    pub payload_pattern: [libc::c_char; 32usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -348,7 +348,7 @@ pub type socket_mode = u32;
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
 pub struct filtering_internals {
-    pub jiffies_last_match: ::std::os::raw::c_ulong,
+    pub jiffies_last_match: libc::c_ulong,
     pub reflector_dev: *mut net_device,
 }
 #[repr(C, packed)]
@@ -362,7 +362,7 @@ pub struct filtering_rule {
     pub bidirectional: uint8_t,
     pub core_fields: filtering_rule_core_fields,
     pub extended_fields: filtering_rule_extended_fields,
-    pub reflector_device_name: [::std::os::raw::c_char; 8usize],
+    pub reflector_device_name: [libc::c_char; 8usize],
     pub internals: filtering_internals,
 }
 #[repr(C, packed)]
@@ -529,14 +529,14 @@ pub type five_tuple_rule_handler = ::std::option::Option<
         pfr: *mut pf_ring_socket,
         rule: *mut hw_filtering_rule,
         request: hw_filtering_rule_command,
-    ) -> ::std::os::raw::c_int,
+    ) -> libc::c_int,
 >;
 pub type perfect_filter_hw_rule_handler = ::std::option::Option<
     unsafe extern "C" fn(
         pfr: *mut pf_ring_socket,
         rule: *mut hw_filtering_rule,
         request: hw_filtering_rule_command,
-    ) -> ::std::os::raw::c_int,
+    ) -> libc::c_int,
 >;
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
@@ -556,7 +556,7 @@ pub struct hash_filtering_rule {
     pub port_peer_a: uint16_t,
     pub port_peer_b: uint16_t,
     pub rule_action: rule_action_behaviour,
-    pub reflector_device_name: [::std::os::raw::c_char; 8usize],
+    pub reflector_device_name: [libc::c_char; 8usize],
     pub internals: filtering_internals,
 }
 #[repr(C, packed)]
@@ -596,23 +596,23 @@ pub struct flowSlotInfo {
     pub tot_fwd_notok: uint64_t,
     pub good_pkt_sent: uint64_t,
     pub pkt_send_error: uint64_t,
-    pub padding: [::std::os::raw::c_char; 24usize],
-    pub k_padding: [::std::os::raw::c_char; 3968usize],
+    pub padding: [libc::c_char; 24usize],
+    pub k_padding: [libc::c_char; 3968usize],
     pub tot_read: uint64_t,
     pub remove_off: uint64_t,
-    pub u_padding: [::std::os::raw::c_char; 4080usize],
+    pub u_padding: [libc::c_char; 4080usize],
 }
 pub type FlowSlotInfo = flowSlotInfo;
 pub type zc_dev_wait_packet = ::std::option::Option<
     unsafe extern "C" fn(
-        adapter: *mut ::std::os::raw::c_void,
-        mode: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int,
+        adapter: *mut libc::c_void,
+        mode: libc::c_int,
+    ) -> libc::c_int,
 >;
 pub type zc_dev_notify = ::std::option::Option<
     unsafe extern "C" fn(
-        rx_adapter_ptr: *mut ::std::os::raw::c_void,
-        tx_adapter_ptr: *mut ::std::os::raw::c_void,
+        rx_adapter_ptr: *mut libc::c_void,
+        tx_adapter_ptr: *mut libc::c_void,
         device_in_use: uint8_t,
     ),
 >;
@@ -655,17 +655,17 @@ pub struct zc_memory_info {
 pub struct zc_dev_info {
     pub mem_info: zc_memory_info,
     pub channel_id: uint16_t,
-    pub rx_descr_packet_memory: *mut ::std::os::raw::c_void,
-    pub tx_descr_packet_memory: *mut ::std::os::raw::c_void,
-    pub phys_card_memory: *mut ::std::os::raw::c_char,
+    pub rx_descr_packet_memory: *mut libc::c_void,
+    pub tx_descr_packet_memory: *mut libc::c_void,
+    pub phys_card_memory: *mut libc::c_char,
     pub dev: *mut net_device,
     pub hwdev: *mut device,
     pub device_address: [c_uchar; 6usize],
-    pub packet_waitqueue: *mut ::std::os::raw::c_void,
+    pub packet_waitqueue: *mut libc::c_void,
     pub interrupt_received: *mut uint8_t,
     pub in_use: uint8_t,
-    pub rx_adapter_ptr: *mut ::std::os::raw::c_void,
-    pub tx_adapter_ptr: *mut ::std::os::raw::c_void,
+    pub rx_adapter_ptr: *mut libc::c_void,
+    pub tx_adapter_ptr: *mut libc::c_void,
     pub wait_packet_function_ptr: zc_dev_wait_packet,
     pub usage_notification: zc_dev_notify,
 }
@@ -673,7 +673,7 @@ pub struct zc_dev_info {
 #[derive(Debug, Copy, Clone)]
 pub struct zc_dev_mapping {
     pub operation: zc_dev_operation,
-    pub device_name: [::std::os::raw::c_char; 16usize],
+    pub device_name: [libc::c_char; 16usize],
     pub channel_id: i32,
 }
 pub const cluster_per_flow: cluster_type = 0;
@@ -702,7 +702,7 @@ pub type pfring_device_type = u32;
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
 pub struct virtual_filtering_device_info {
-    pub device_name: [::std::os::raw::c_char; 16usize],
+    pub device_name: [libc::c_char; 16usize],
     pub device_type: pfring_device_type,
     pub proc_entry: *mut proc_dir_entry,
 }

@@ -1,11 +1,11 @@
 use crate::{ __BindgenBitfieldUnit, __IncompleteArrayField, };
 
-use crate::libc::{ c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, time_t, timeval, };
+use crate::libc::{ self, c_uint, uint8_t, uint16_t, uint32_t, uint64_t, c_uchar, time_t, timeval, };
 
 
-pub type pfring_ft_table = ::std::os::raw::c_void;
-pub type pfring_ft_list = ::std::os::raw::c_void;
-pub type pfring_ft_flow = ::std::os::raw::c_void;
+pub type pfring_ft_table = libc::c_void;
+pub type pfring_ft_list = libc::c_void;
+pub type pfring_ft_flow = libc::c_void;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -365,7 +365,7 @@ pub struct pfring_ft_ndpi_protocol {
     pub master_protocol: uint16_t,
     #[doc = "< e.g. FaceBook"]
     pub app_protocol: uint16_t,
-    pub category: ::std::os::raw::c_int,
+    pub category: libc::c_int,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -393,7 +393,7 @@ pub struct pfring_ft_flow_value {
     #[doc = "< nDPI protocol"]
     pub l7_protocol: pfring_ft_ndpi_protocol,
     #[doc = "< User metadata"]
-    pub user: *mut ::std::os::raw::c_void,
+    pub user: *mut libc::c_void,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -445,17 +445,17 @@ pub struct pfring_ft_stats {
 }
 #[doc = " Callbacks prototypes"]
 pub type pfring_ft_export_list_func = ::std::option::Option<
-    unsafe extern "C" fn(flows_list: *mut pfring_ft_list, user: *mut ::std::os::raw::c_void),
+    unsafe extern "C" fn(flows_list: *mut pfring_ft_list, user: *mut libc::c_void),
 >;
 pub type pfring_ft_export_flow_func = ::std::option::Option<
-    unsafe extern "C" fn(flow: *mut pfring_ft_flow, user: *mut ::std::os::raw::c_void),
+    unsafe extern "C" fn(flow: *mut pfring_ft_flow, user: *mut libc::c_void),
 >;
 pub type pfring_ft_flow_packet_func = ::std::option::Option<
     unsafe extern "C" fn(
         data: *const c_uchar,
         metadata: *mut pfring_ft_packet_metadata,
         flow: *mut pfring_ft_flow,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     ),
 >;
 extern "C" {
@@ -485,7 +485,7 @@ extern "C" {
     pub fn pfring_ft_set_new_flow_callback(
         table: *mut pfring_ft_table,
         callback: pfring_ft_export_flow_func,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -496,7 +496,7 @@ extern "C" {
     pub fn pfring_ft_set_flow_packet_callback(
         table: *mut pfring_ft_table,
         callback: pfring_ft_flow_packet_func,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -507,7 +507,7 @@ extern "C" {
     pub fn pfring_ft_set_l7_detected_callback(
         table: *mut pfring_ft_table,
         callback: pfring_ft_flow_packet_func,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -519,7 +519,7 @@ extern "C" {
     pub fn pfring_ft_set_flow_export_callback(
         table: *mut pfring_ft_table,
         callback: pfring_ft_export_flow_func,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -533,7 +533,7 @@ extern "C" {
     pub fn pfring_ft_set_flow_list_export_callback(
         table: *mut pfring_ft_table,
         callback: pfring_ft_export_list_func,
-        user: *mut ::std::os::raw::c_void,
+        user: *mut libc::c_void,
     );
 }
 extern "C" {
@@ -560,7 +560,7 @@ extern "C" {
     pub fn pfring_ft_housekeeping(
         table: *mut pfring_ft_table,
         epoch: uint32_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Flush all flows (usually called on program termination, before destroying the flow table)."]
@@ -620,8 +620,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative number on failures."]
     pub fn pfring_ft_load_configuration(
         table: *mut pfring_ft_table,
-        path: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        path: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set a shunt rule for a L7 protocol."]
@@ -630,7 +630,7 @@ extern "C" {
     #[doc = " @param packets The number of packets before shunting the flow returning a discard action from pfring_ft_process()."]
     pub fn pfring_ft_set_shunt_protocol_by_name(
         table: *mut pfring_ft_table,
-        protocol_name: *const ::std::os::raw::c_char,
+        protocol_name: *const libc::c_char,
         packets: uint8_t,
     );
 }
@@ -641,7 +641,7 @@ extern "C" {
     #[doc = " @param action The action returned by pfring_ft_process() for all packets matching the protocol."]
     pub fn pfring_ft_set_filter_protocol_by_name(
         table: *mut pfring_ft_table,
-        protocol_name: *const ::std::os::raw::c_char,
+        protocol_name: *const libc::c_char,
         action: pfring_ft_action,
     );
 }
@@ -655,9 +655,9 @@ extern "C" {
     pub fn pfring_ft_l7_protocol_name(
         table: *mut pfring_ft_table,
         protocol: *mut pfring_ft_ndpi_protocol,
-        buffer: *mut ::std::os::raw::c_char,
-        buffer_len: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
+        buffer: *mut libc::c_char,
+        buffer_len: libc::c_int,
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     #[doc = " Set the nDPI handle. This is meant to be used for custom nDPI settings only,"]
@@ -668,7 +668,7 @@ extern "C" {
     pub fn pfring_ft_set_ndpi_handle(
         table: *mut pfring_ft_table,
         ndpi: *mut ndpi_detection_module_struct,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Load custom nDPI protocols from a configuration file."]
@@ -679,8 +679,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative number on failures."]
     pub fn pfring_ft_load_ndpi_protocols(
         table: *mut pfring_ft_table,
-        path: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        path: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Load nDPI categories (defined by hostname) from a configuration file."]
@@ -691,13 +691,13 @@ extern "C" {
     #[doc = " @return 0 on success, a negative number on failures."]
     pub fn pfring_ft_load_ndpi_categories(
         table: *mut pfring_ft_table,
-        path: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        path: *const libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Check if nDPI is available."]
     #[doc = " #return 1 if nDPI is available, 0 otherwise."]
-    pub fn pfring_ft_is_ndpi_available() -> ::std::os::raw::c_int;
+    pub fn pfring_ft_is_ndpi_available() -> libc::c_int;
 }
 extern "C" {
     #[doc = " Get flow processing statistics."]
@@ -708,7 +708,7 @@ extern "C" {
 extern "C" {
     #[doc = " Get the PF_RING FT version."]
     #[doc = " @param version A buffer (32 bytes long) where version is returned. (out)"]
-    pub fn pfring_ft_version(version: *mut ::std::os::raw::c_char);
+    pub fn pfring_ft_version(version: *mut libc::c_char);
 }
 extern "C" {
     #[doc = " Get license info."]
@@ -717,10 +717,10 @@ extern "C" {
     #[doc = " @param maintenance_expiration A pointer to a time_t where maintenance expiration is returned. (out)"]
     #[doc = " @return 1 if a valid license is installed, 0 otherwise."]
     pub fn pfring_ft_license(
-        system_id: *mut ::std::os::raw::c_char,
+        system_id: *mut libc::c_char,
         license_expiration: *mut time_t,
         maintenance_expiration: *mut time_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Enable debug mode"]

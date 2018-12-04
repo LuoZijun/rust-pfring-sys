@@ -3,17 +3,6 @@ use crate::libc::{
     self, c_uint, uint8_t, uint16_t, c_ushort, uint32_t, uint64_t, c_ulong, c_uchar, time_t,
     timeval, timespec, pthread_rwlock_t,
 };
-
-#[cfg(target_os = "linux")]
-use crate::libc::sockaddr_ll;
-#[cfg(target_os = "macos")]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sockaddr_ll {
-    a: [u8; 8],
-}
-
-
 use crate::linux::pf_ring::{
     pfring_pkthdr, virtual_filtering_device_info, hash_filtering_rule,
     filtering_rule, cluster_type, socket_mode,
@@ -21,9 +10,17 @@ use crate::linux::pf_ring::{
     FlowSlotInfo, pfring_device_type,
 };
 
-pub type pfringProcesssPacket = ::std::option::Option<
-    unsafe extern "C" fn(h: *const pfring_pkthdr, p: *const c_uchar, user_bytes: *const c_uchar),
->;
+
+#[cfg(target_os = "linux")]
+use crate::libc::sockaddr_ll;
+
+// #[cfg(target_os = "macos")]
+// #[repr(C)]
+// #[derive(Debug, Copy, Clone)]
+// #[doc(hidden)]
+// pub struct sockaddr_ll {
+//     a: [u8; 8],
+// }
 
 
 pub const MAX_CAPLEN: u32 = 65535;
@@ -47,6 +44,11 @@ pub type pfring_rwlock_t       = pthread_rwlock_t;
 // pub type pfring_rwlock_wrlock  = libc::pthread_rwlock_wrlock;
 // pub type pfring_rwlock_unlock  = libc::pthread_rwlock_unlock;
 // pub type pfring_rwlock_destroy = libc::pthread_rwlock_destroy;
+
+
+pub type pfringProcesssPacket = ::std::option::Option<
+    unsafe extern "C" fn(h: *const pfring_pkthdr, p: *const c_uchar, user_bytes: *const c_uchar),
+>;
 
 pub type pfring = __pfring;
 
@@ -88,28 +90,28 @@ pub struct pfring_chunk_info {
 #[derive(Debug, Copy, Clone)]
 pub struct pfring_bpf_program {
     pub bf_len: c_uint,
-    pub bf_insns: *mut ::std::os::raw::c_void,
+    pub bf_insns: *mut libc::c_void,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct pfring_if {
-    pub name: *mut ::std::os::raw::c_char,
-    pub system_name: *mut ::std::os::raw::c_char,
-    pub module: *mut ::std::os::raw::c_char,
-    pub sn: *mut ::std::os::raw::c_char,
-    pub mac: [::std::os::raw::c_char; 6usize],
+    pub name: *mut libc::c_char,
+    pub system_name: *mut libc::c_char,
+    pub module: *mut libc::c_char,
+    pub sn: *mut libc::c_char,
+    pub mac: [libc::c_char; 6usize],
     pub bus_id: pfring_if__bindgen_ty_1,
-    pub status: ::std::os::raw::c_int,
-    pub license: ::std::os::raw::c_int,
+    pub status: libc::c_int,
+    pub license: libc::c_int,
     pub next: *mut pfring_if,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct pfring_if__bindgen_ty_1 {
-    pub slot: ::std::os::raw::c_int,
-    pub bus: ::std::os::raw::c_int,
-    pub device: ::std::os::raw::c_int,
-    pub function: ::std::os::raw::c_int,
+    pub slot: libc::c_int,
+    pub bus: libc::c_int,
+    pub device: libc::c_int,
+    pub function: libc::c_int,
 }
 pub type pfring_if_t = pfring_if;
 #[repr(C)]
@@ -134,10 +136,10 @@ pub struct __pfring {
     pub hw_ts: __pfring__bindgen_ty_1,
     pub tx: __pfring__bindgen_ty_2,
     pub zc_device: uint8_t,
-    pub priv_data: *mut ::std::os::raw::c_void,
+    pub priv_data: *mut libc::c_void,
     pub close: ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring)>,
     pub stats: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut pfring_stat) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut pfring_stat) -> libc::c_int,
     >,
     pub recv: ::std::option::Option<
         unsafe extern "C" fn(
@@ -146,69 +148,69 @@ pub struct __pfring {
             arg3: c_uint,
             arg4: *mut pfring_pkthdr,
             arg5: uint8_t,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub set_poll_watermark: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub set_poll_watermark_timeout: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub set_poll_duration: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: c_uint) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: c_uint) -> libc::c_int,
     >,
     pub set_tx_watermark: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub set_channel_id: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> libc::c_int,
     >,
     pub set_channel_mask: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint64_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint64_t) -> libc::c_int,
     >,
     pub set_application_name: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_char,
+        ) -> libc::c_int,
     >,
     pub set_application_stats: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_char,
+        ) -> libc::c_int,
     >,
     pub get_appl_stats_file_name: ::std::option::Option<
         unsafe extern "C" fn(
             ring: *mut pfring,
-            path: *mut ::std::os::raw::c_char,
+            path: *mut libc::c_char,
             path_len: c_uint,
-        ) -> *mut ::std::os::raw::c_char,
+        ) -> *mut libc::c_char,
     >,
     pub set_vlan_id: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub bind: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_char,
+        ) -> libc::c_int,
     >,
     pub send: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
+            arg2: *mut libc::c_char,
             arg3: c_uint,
             arg4: uint8_t,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub send_get_time: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
+            arg2: *mut libc::c_char,
             arg3: c_uint,
             arg4: *mut timespec,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub get_num_rx_channels:
         ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> uint8_t>,
@@ -216,43 +218,43 @@ pub struct __pfring {
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut pfring_card_settings,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub set_sampling_rate: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> libc::c_int,
     >,
     pub set_filtering_sampling_rate: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> libc::c_int,
     >,
     pub set_packet_slicing: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: packet_slicing_level,
             arg3: uint32_t,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub get_selectable_fd:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub set_direction: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: packet_direction) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: packet_direction) -> libc::c_int,
     >,
     pub set_socket_mode: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: socket_mode) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: socket_mode) -> libc::c_int,
     >,
     pub set_cluster: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: c_uint,
             arg3: cluster_type,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub remove_from_cluster:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub set_master_id: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint32_t) -> libc::c_int,
     >,
     pub set_master: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut pfring) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut pfring) -> libc::c_int,
     >,
     pub get_ring_id: ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> uint32_t>,
     pub get_num_queued_pkts:
@@ -261,71 +263,71 @@ pub struct __pfring {
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut hash_filtering_rule,
-            arg3: *mut ::std::os::raw::c_char,
+            arg3: *mut libc::c_char,
             arg4: *mut c_uint,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub handle_hash_filtering_rule: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut hash_filtering_rule,
             arg3: c_uchar,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub purge_idle_hash_rules: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub add_filtering_rule: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut filtering_rule) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut filtering_rule) -> libc::c_int,
     >,
     pub remove_filtering_rule: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub purge_idle_rules: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub get_filtering_rule_stats: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: uint16_t,
-            arg3: *mut ::std::os::raw::c_char,
+            arg3: *mut libc::c_char,
             arg4: *mut c_uint,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub toggle_filtering_policy: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint8_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint8_t) -> libc::c_int,
     >,
     pub enable_rss_rehash:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub poll: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: c_uint) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: c_uint) -> libc::c_int,
     >,
     pub is_pkt_available:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub next_pkt_time: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut timespec) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut timespec) -> libc::c_int,
     >,
     pub next_pkt_raw_timestamp: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, ts: *mut uint64_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, ts: *mut uint64_t) -> libc::c_int,
     >,
     pub version: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut uint32_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut uint32_t) -> libc::c_int,
     >,
     pub get_bound_device_address: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut c_uchar) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut c_uchar) -> libc::c_int,
     >,
     pub get_bound_device_ifindex: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_int,
+        ) -> libc::c_int,
     >,
     pub get_device_ifindex: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
-            arg3: *mut ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_char,
+            arg3: *mut libc::c_int,
+        ) -> libc::c_int,
     >,
     pub get_slot_header_len:
         ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> uint16_t>,
@@ -333,91 +335,91 @@ pub struct __pfring {
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut virtual_filtering_device_info,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub add_hw_rule: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut hw_filtering_rule,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub remove_hw_rule: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: uint16_t) -> libc::c_int,
     >,
     pub loopback_test: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
+            arg2: *mut libc::c_char,
             arg3: c_uint,
             arg4: c_uint,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub enable_ring:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub disable_ring:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub shutdown: ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring)>,
     pub set_bpf_filter: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_char,
+        ) -> libc::c_int,
     >,
     pub remove_bpf_filter:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub get_device_clock: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut timespec) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut timespec) -> libc::c_int,
     >,
     pub set_device_clock: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut timespec) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut timespec) -> libc::c_int,
     >,
     pub adjust_device_clock: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut timespec,
             arg3: i8,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub sync_indexes_with_kernel: ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring)>,
     pub send_last_rx_packet: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: ::std::os::raw::c_int,
-        ) -> ::std::os::raw::c_int,
+            arg2: libc::c_int,
+        ) -> libc::c_int,
     >,
     pub flush_tx_packets: ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring)>,
     pub register_zerocopy_tx_ring: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut pfring) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(arg1: *mut pfring, arg2: *mut pfring) -> libc::c_int,
     >,
     pub recv_chunk: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut *mut ::std::os::raw::c_void,
+            arg2: *mut *mut libc::c_void,
             arg3: *mut pfring_chunk_info,
             arg4: uint8_t,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub set_bound_dev_name: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
-            arg2: *mut ::std::os::raw::c_char,
-        ) -> ::std::os::raw::c_int,
+            arg2: *mut libc::c_char,
+        ) -> libc::c_int,
     >,
     pub get_metadata: ::std::option::Option<
         unsafe extern "C" fn(
             arg1: *mut pfring,
             arg2: *mut *mut c_uchar,
             arg3: *mut uint32_t,
-        ) -> ::std::os::raw::c_int,
+        ) -> libc::c_int,
     >,
     pub get_interface_speed:
         ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> uint32_t>,
     pub rdi: __pfring__bindgen_ty_3,
     pub ft_mode: filtering_mode,
     pub ft_device_type: pfring_device_type,
-    pub buffer: *mut ::std::os::raw::c_char,
-    pub slots: *mut ::std::os::raw::c_char,
-    pub device_name: *mut ::std::os::raw::c_char,
+    pub buffer: *mut libc::c_char,
+    pub slots: *mut libc::c_char,
+    pub device_name: *mut libc::c_char,
     pub caplen: uint32_t,
     pub slot_header_len: uint16_t,
     pub mtu: uint16_t,
@@ -427,8 +429,8 @@ pub struct __pfring {
     pub slicing_additional_bytes: uint32_t,
     pub is_shutting_down: uint8_t,
     pub socket_default_accept_policy: uint8_t,
-    pub fd: ::std::os::raw::c_int,
-    pub device_id: ::std::os::raw::c_int,
+    pub fd: libc::c_int,
+    pub device_id: libc::c_int,
     pub slots_info: *mut FlowSlotInfo,
     pub poll_sleep: uint32_t,
     pub poll_duration: uint16_t,
@@ -440,7 +442,7 @@ pub struct __pfring {
     pub rx_lock: pthread_rwlock_t,
     pub tx_lock: pthread_rwlock_t,
     pub flags: uint32_t,
-    pub ft: *mut ::std::os::raw::c_void,
+    pub ft: *mut libc::c_void,
     pub sock_tx: sockaddr_ll,
     pub reflector_socket: *mut pfring,
     pub one_copy_rx_pfring: *mut pfring,
@@ -534,7 +536,7 @@ extern "C" {
     #[doc = " @param flags       It allows several options to be specified on a compact format using bitmaps (see PF_RING_* macros)."]
     #[doc = " @return On success a handle is returned, NULL otherwise."]
     pub fn pfring_open(
-        device_name: *const ::std::os::raw::c_char,
+        device_name: *const libc::c_char,
         caplen: uint32_t,
         flags: uint32_t,
     ) -> *mut pfring;
@@ -549,7 +551,7 @@ extern "C" {
     #[doc = " @param ring        A pointer to an array of rings that will contain the opened ring pointers."]
     #[doc = " @return The last index of the ring array that contain a valid ring pointer."]
     pub fn pfring_open_multichannel(
-        device_name: *const ::std::os::raw::c_char,
+        device_name: *const libc::c_char,
         caplen: uint32_t,
         flags: uint32_t,
         ring: *mut *mut pfring,
@@ -577,7 +579,7 @@ extern "C" {
         looper: pfringProcesssPacket,
         user_bytes: *const c_uchar,
         wait_for_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Break a receive loop (pfring_loop() or blocking pfring_recv())."]
@@ -595,7 +597,7 @@ extern "C" {
     #[doc = " @param ring  The PF_RING handle."]
     #[doc = " @param stats A user-allocated buffer on which stats (number of received and dropped packets) will be stored."]
     #[doc = " @return 0 on uccess, a negative value otherwise."]
-    pub fn pfring_stats(ring: *mut pfring, stats: *mut pfring_stat) -> ::std::os::raw::c_int;
+    pub fn pfring_stats(ring: *mut pfring, stats: *mut pfring_stat) -> libc::c_int;
 }
 extern "C" {
     #[doc = " This call returns an incoming packet when available."]
@@ -615,7 +617,7 @@ extern "C" {
         buffer_len: c_uint,
         hdr: *mut pfring_pkthdr,
         wait_for_incoming_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Same of pfring_recv(), with additional parameters to force packet parsing."]
@@ -637,7 +639,7 @@ extern "C" {
         level: uint8_t,
         add_timestamp: uint8_t,
         add_hash: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Get metadata for the last captured packet, if any. This is usually used with ZC SPSC queues for reading packet metadata."]
@@ -648,7 +650,7 @@ extern "C" {
         ring: *mut pfring,
         metadata: *mut *mut c_uchar,
         metadata_len: *mut uint32_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Whenever a user-space application has to wait until incoming packets arrive, it can instruct PF_RING not to return from poll() call"]
@@ -662,7 +664,7 @@ extern "C" {
     pub fn pfring_set_poll_watermark(
         ring: *mut pfring,
         watermark: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Flush ring\'s queue if timeout passed."]
@@ -674,14 +676,14 @@ extern "C" {
     pub fn pfring_set_poll_watermark_timeout(
         ring: *mut pfring,
         poll_watermark_timeout: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the poll timeout when passive wait is used."]
     #[doc = " @param ring     The PF_RING handle to enable."]
     #[doc = " @param duration The poll timeout in msec."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_poll_duration(ring: *mut pfring, duration: c_uint) -> ::std::os::raw::c_int;
+    pub fn pfring_set_poll_duration(ring: *mut pfring, duration: c_uint) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the number of packets that have to be enqueued in the egress queue before being sent on the wire."]
@@ -691,7 +693,7 @@ extern "C" {
     pub fn pfring_set_tx_watermark(
         ring: *mut pfring,
         watermark: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set a specified filtering rule into the NIC. Note that no PF_RING filter is added, but only a NIC filter."]
@@ -708,14 +710,14 @@ extern "C" {
     pub fn pfring_add_hw_rule(
         ring: *mut pfring,
         rule: *mut hw_filtering_rule,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove the specified filtering rule from the NIC."]
     #[doc = " @param ring The PF_RING handle on which the rule will be removed."]
     #[doc = " @param rule The filtering rule to be removed from the NIC."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_remove_hw_rule(ring: *mut pfring, rule_id: uint16_t) -> ::std::os::raw::c_int;
+    pub fn pfring_remove_hw_rule(ring: *mut pfring, rule_id: uint16_t) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the device channel id to be used."]
@@ -723,7 +725,7 @@ extern "C" {
     #[doc = " @param channel_id The channel id."]
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_channel_id(ring: *mut pfring, channel_id: uint32_t)
-        -> ::std::os::raw::c_int;
+        -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the channel mask to be used for packet capture."]
@@ -733,10 +735,10 @@ extern "C" {
     pub fn pfring_set_channel_mask(
         ring: *mut pfring,
         channel_mask: uint64_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    #[doc = " Tell PF_RING the name of the application (usually argv[0]) that uses this ring. This information is used to identify the application"]
+    #[doc = " Tell PF_RING the name of the application (usually `argv[0]`) that uses this ring. This information is used to identify the application"]
     #[doc = " when accessing the files present in the PF_RING /proc filesystem."]
     #[doc = " This is also available with the PF_RING-aware libpcap via the PCAP_PF_RING_APPNAME environment variable."]
     #[doc = " Example:"]
@@ -747,8 +749,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_application_name(
         ring: *mut pfring,
-        name: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        name: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set custom application statistics."]
@@ -757,8 +759,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_application_stats(
         ring: *mut pfring,
-        stats: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        stats: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the filename where the application statistics can be read."]
@@ -768,16 +770,16 @@ extern "C" {
     #[doc = " @return The path if success, NULL otherwise."]
     pub fn pfring_get_appl_stats_file_name(
         ring: *mut pfring,
-        path: *mut ::std::os::raw::c_char,
+        path: *mut libc::c_char,
         path_len: c_uint,
-    ) -> *mut ::std::os::raw::c_char;
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     #[doc = " Set the VLAN Id of the packets that will be copied to this ring (RX only)"]
     #[doc = " @param ring       The PF_RING handle."]
     #[doc = " @param vlan_id    The vlan id to filter or 0 to accept only untagged VLAN packets"]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_vlan_id(ring: *mut pfring, vlan_id: uint16_t) -> ::std::os::raw::c_int;
+    pub fn pfring_set_vlan_id(ring: *mut pfring, vlan_id: uint16_t) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Bind a socket to a device."]
@@ -786,8 +788,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_bind(
         ring: *mut pfring,
-        device_name: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        device_name: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Send a raw packet (i.e. it is sent on wire as specified). This packet must be fully specified (the MAC address up)"]
@@ -805,10 +807,10 @@ extern "C" {
     #[doc = " @return The number of bytes sent if success, a negative value otherwise."]
     pub fn pfring_send(
         ring: *mut pfring,
-        pkt: *mut ::std::os::raw::c_char,
+        pkt: *mut libc::c_char,
         pkt_len: c_uint,
         flush_packet: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Same as pfring_send(), but this function allows to send a raw packet returning the exact time (ns) it has been sent on the wire."]
@@ -820,10 +822,10 @@ extern "C" {
     #[doc = " @return The number of bytes sent if success, a negative value otherwise."]
     pub fn pfring_send_get_time(
         ring: *mut pfring,
-        pkt: *mut ::std::os::raw::c_char,
+        pkt: *mut libc::c_char,
         pkt_len: c_uint,
         ts: *mut timespec,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Returns the number of RX channels (also known as RX queues) of the ethernet interface to which this ring is bound."]
@@ -837,7 +839,7 @@ extern "C" {
     #[doc = " @param ring The PF_RING handle on which sampling is applied."]
     #[doc = " @param rate The sampling rate. Rate of X means that 1 packet out of X is forwarded. This means that a sampling rate of 1 disables sampling."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_sampling_rate(ring: *mut pfring, rate: uint32_t) -> ::std::os::raw::c_int;
+    pub fn pfring_set_sampling_rate(ring: *mut pfring, rate: uint32_t) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Implement packet sampling during filtering directly into the kernel. Note that this solution is much more efficient than implementing it in user-space."]
@@ -848,7 +850,7 @@ extern "C" {
     pub fn pfring_set_filtering_sampling_rate(
         ring: *mut pfring,
         rate: uint32_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set packet slicing level."]
@@ -860,14 +862,14 @@ extern "C" {
         ring: *mut pfring,
         level: packet_slicing_level,
         additional_bytes: uint32_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Returns the file descriptor associated to the specified ring."]
     #[doc = " This number can be used in function calls such as poll() and select() for passively waiting for incoming packets."]
     #[doc = " @param ring The PF_RING handle to query."]
     #[doc = " @return A number that can be used as reference to this ring, in function calls that require a selectable file descriptor."]
-    pub fn pfring_get_selectable_fd(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_get_selectable_fd(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Tell PF_RING to consider only those packets matching the specified direction. If the application does not call this function,"]
@@ -878,14 +880,14 @@ extern "C" {
     pub fn pfring_set_direction(
         ring: *mut pfring,
         direction: packet_direction,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Tell PF_RING if the application needs to send and/or receive packets to/from the socket."]
     #[doc = " @param ring The PF_RING handle to enable."]
     #[doc = " @param mode The socket mode (send, receive or both send and receive)."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_socket_mode(ring: *mut pfring, mode: socket_mode) -> ::std::os::raw::c_int;
+    pub fn pfring_set_socket_mode(ring: *mut pfring, mode: socket_mode) -> libc::c_int;
 }
 extern "C" {
     #[doc = " This call allows a ring to be added to a cluster that can spawn across address spaces."]
@@ -901,28 +903,28 @@ extern "C" {
         ring: *mut pfring,
         clusterId: c_uint,
         the_type: cluster_type,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " This call allows a ring to be removed from a previous joined cluster."]
     #[doc = " @param ring      The PF_RING handle to be cluster."]
     #[doc = " @param clusterId A numeric identifier of the cluster to which the ring will be bound."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_remove_from_cluster(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_remove_from_cluster(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the master ring using the id (vanilla PF_RING only)"]
     #[doc = " @param ring   The PF_RING handle."]
     #[doc = " @param master The master socket id."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_master_id(ring: *mut pfring, master_id: uint32_t) -> ::std::os::raw::c_int;
+    pub fn pfring_set_master_id(ring: *mut pfring, master_id: uint32_t) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the master ring using the PF_RING handle (vanilla PF_RING only)."]
     #[doc = " @param ring   The PF_RING handle."]
     #[doc = " @param master The master PF_RING handle."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_master(ring: *mut pfring, master: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_set_master(ring: *mut pfring, master: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the ring id."]
@@ -949,35 +951,39 @@ extern "C" {
         ring: *mut pfring,
         rule_to_add: *mut hash_filtering_rule,
         add_rule: c_uchar,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
-    #[doc = " Add a wildcard filtering rule to an existing ring. Each rule will have a unique rule Id across the ring (i.e. two rings can have rules with the same id)."]
-    #[doc = ""]
-    #[doc = " PF_RING allows filtering packets in two ways: precise (a.k.a. hash filtering) or wildcard filtering."]
-    #[doc = " Precise filtering is used when it is necessary to track a precise 6-tuple connection <vlan Id, protocol, source IP, source port, destination IP, destination port>."]
-    #[doc = " Wildcard filtering is used instead whenever a filter can have wildcards on some of its fields (e.g. match all UDP packets regardless of their destination)."]
-    #[doc = " If some field is set to zero it will not participate in filter calculation."]
-    #[doc = ""]
-    #[doc = " Note about packet reflection: packet reflection is the ability to bridge packets in kernel without sending them to userspace and back."]
-    #[doc = " You can specify packet reflection inside the filtering rules."]
-    #[doc = ""]
-    #[doc = " typedef struct {"]
-    #[doc = "  ..."]
-    #[doc = " char reflector_device_name[REFLECTOR_NAME_LEN];"]
-    #[doc = " ..."]
-    #[doc = " } filtering_rule;"]
-    #[doc = ""]
-    #[doc = " In the reflector_device_name you need to specify a device name (e.g. eth0) on which packets matching the filter will be reflected."]
-    #[doc = " Make sure NOT to specify as reflection device the same device name on which you capture packets, as otherwise you will create a packet loop."]
-    #[doc = ""]
-    #[doc = " @param ring        The PF_RING handle on which the rule will be added."]
-    #[doc = " @param rule_to_add The rule to add as defined in the last chapter of this document."]
-    #[doc = " @return 0 on success, a negative value otherwise."]
+    /// Add a wildcard filtering rule to an existing ring. Each rule will have a unique rule Id across the ring (i.e. two rings can have rules with the same id).
+    /// 
+    /// PF_RING allows filtering packets in two ways: precise (a.k.a. hash filtering) or wildcard filtering. 
+    /// Precise filtering is used when it is necessary to track a precise 6-tuple connection <vlan Id, protocol, source IP, source port, destination IP, destination port>. 
+    /// Wildcard filtering is used instead whenever a filter can have wildcards on some of its fields (e.g. match all UDP packets regardless of their destination). 
+    /// If some field is set to zero it will not participate in filter calculation.
+    /// 
+    /// Note about packet reflection: packet reflection is the ability to bridge packets in kernel without sending them to userspace and back. 
+    /// You can specify packet reflection inside the filtering rules.
+    /// 
+    /// typedef struct {
+    /// 
+    /// ...
+    ///
+    /// char reflector_device_name`[`REFLECTOR_NAME_LEN`]`;
+    ///
+    /// ...
+    /// 
+    /// } filtering_rule;
+    /// 
+    /// In the reflector_device_name you need to specify a device name (e.g. eth0) on which packets matching the filter will be reflected. 
+    /// Make sure NOT to specify as reflection device the same device name on which you capture packets, as otherwise you will create a packet loop.
+    /// 
+    /// @param ring        The PF_RING handle on which the rule will be added.
+    /// @param rule_to_add The rule to add as defined in the last chapter of this document.
+    /// @return 0 on success, a negative value otherwise.
     pub fn pfring_add_filtering_rule(
         ring: *mut pfring,
         rule_to_add: *mut filtering_rule,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove a previously added filtering rule."]
@@ -987,7 +993,7 @@ extern "C" {
     pub fn pfring_remove_filtering_rule(
         ring: *mut pfring,
         rule_id: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove hash filtering rules inactive for the specified number of seconds."]
@@ -997,7 +1003,7 @@ extern "C" {
     pub fn pfring_purge_idle_hash_rules(
         ring: *mut pfring,
         inactivity_sec: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove filtering rules inactive for the specified number of seconds."]
@@ -1007,7 +1013,7 @@ extern "C" {
     pub fn pfring_purge_idle_rules(
         ring: *mut pfring,
         inactivity_sec: uint16_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Read statistics of a hash filtering rule."]
@@ -1020,9 +1026,9 @@ extern "C" {
     pub fn pfring_get_hash_filtering_rule_stats(
         ring: *mut pfring,
         rule: *mut hash_filtering_rule,
-        stats: *mut ::std::os::raw::c_char,
+        stats: *mut libc::c_char,
         stats_len: *mut c_uint,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Read statistics of a hash filtering rule."]
@@ -1036,9 +1042,9 @@ extern "C" {
     pub fn pfring_get_filtering_rule_stats(
         ring: *mut pfring,
         rule_id: uint16_t,
-        stats: *mut ::std::os::raw::c_char,
+        stats: *mut libc::c_char,
         stats_len: *mut c_uint,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the default filtering policy. This means that if no rule is matching the incoming packet the default policy will decide"]
@@ -1050,34 +1056,34 @@ extern "C" {
     pub fn pfring_toggle_filtering_policy(
         ring: *mut pfring,
         rules_default_accept_policy: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Tells PF_RING to rehash incoming packets using a bi-directional hash function."]
     #[doc = " This is also available with the PF_RING-aware libpcap via the PCAP_PF_RING_RSS_REHASH environment variable."]
     #[doc = " @param ring The PF_RING handle to query."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_enable_rss_rehash(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_enable_rss_rehash(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Performs passive wait on a PF_RING socket, similar to the standard poll(), taking care of data structures synchronization."]
     #[doc = " @param ring          The PF_RING socket to poll."]
     #[doc = " @param wait_duration The poll timeout in msec."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_poll(ring: *mut pfring, wait_duration: c_uint) -> ::std::os::raw::c_int;
+    pub fn pfring_poll(ring: *mut pfring, wait_duration: c_uint) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Check if a packet is available."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @return 1 if a packet is available, 0 if there is no packet available, a negative number in case of error."]
-    pub fn pfring_is_pkt_available(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_is_pkt_available(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " This call returns the arrival time of the next incoming packet, when available."]
     #[doc = " @param ring The PF_RING handle where we perform the check."]
     #[doc = " @param ts   The struct where the time will be stored."]
     #[doc = " @return 0 in case of success, a negative number in case of error."]
-    pub fn pfring_next_pkt_time(ring: *mut pfring, ts: *mut timespec) -> ::std::os::raw::c_int;
+    pub fn pfring_next_pkt_time(ring: *mut pfring, ts: *mut timespec) -> libc::c_int;
 }
 extern "C" {
     #[doc = " This call returns the raw timestamp of the next incoming packet, when available. This is available with adapters supporting rx hardware timestamping only."]
@@ -1087,7 +1093,7 @@ extern "C" {
     pub fn pfring_next_pkt_raw_timestamp(
         ring: *mut pfring,
         timestamp_ns: *mut uint64_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Read the ring version. Note that if the ring version is 5.6 the retuned ring version is 0x050600."]
@@ -1099,7 +1105,7 @@ extern "C" {
     #[doc = " @param ring    The PF_RING handle, in case the module supports versioning."]
     #[doc = " @param version A user-allocated buffer on which ring version will be copied."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_version(ring: *mut pfring, version: *mut uint32_t) -> ::std::os::raw::c_int;
+    pub fn pfring_version(ring: *mut pfring, version: *mut uint32_t) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set a reflector device to send all incoming packets. This open a new socket and packets are automatically sent using pfring_send()."]
@@ -1108,8 +1114,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_reflector_device(
         ring: *mut pfring,
-        device_name: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        device_name: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Returns the MAC address of the device bound to the socket."]
@@ -1119,7 +1125,7 @@ extern "C" {
     pub fn pfring_get_bound_device_address(
         ring: *mut pfring,
         mac_address: *mut c_uchar,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the size of the PF_RING packet header (vanilla PF_RING only)."]
@@ -1134,8 +1140,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_get_bound_device_ifindex(
         ring: *mut pfring,
-        if_index: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        if_index: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the interface index of the provided device."]
@@ -1145,9 +1151,9 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_get_device_ifindex(
         ring: *mut pfring,
-        device_name: *mut ::std::os::raw::c_char,
-        if_index: *mut ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        device_name: *mut libc::c_char,
+        if_index: *mut libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set a filtering device."]
@@ -1157,7 +1163,7 @@ extern "C" {
     pub fn pfring_set_virtual_device(
         ring: *mut pfring,
         info: *mut virtual_filtering_device_info,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " This call processes packets until pfring_breakloop() is called or an error occurs."]
@@ -1169,22 +1175,22 @@ extern "C" {
     #[doc = " @return A non-negative number if pfring_breakloop() is called. A negative number in case of error."]
     pub fn pfring_loopback_test(
         ring: *mut pfring,
-        buffer: *mut ::std::os::raw::c_char,
+        buffer: *mut libc::c_char,
         buffer_len: c_uint,
         test_len: c_uint,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " When a ring is created, it is not enabled (i.e. incoming packets are dropped) until the above function is called."]
     #[doc = " @param ring The PF_RING handle to enable."]
     #[doc = " @return 0 on success, a negative value otherwise (e.g. the ring cannot be enabled)."]
-    pub fn pfring_enable_ring(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_enable_ring(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Disable a ring."]
     #[doc = " @param ring The PF_RING handle to disable."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_disable_ring(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_disable_ring(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " In order to set BPF filters through the PF_RING API it\u{2019}s necessary to enable (this is the default) BPF support"]
@@ -1195,14 +1201,14 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_bpf_filter(
         ring: *mut pfring,
-        filter_buffer: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        filter_buffer: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Remove the BPF filter."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_remove_bpf_filter(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_remove_bpf_filter(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Sets the filtering mode (software only, hardware only, both software and hardware) in order to implicitly"]
@@ -1213,21 +1219,21 @@ extern "C" {
     pub fn pfring_set_filtering_mode(
         ring: *mut pfring,
         mode: filtering_mode,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Reads the time from the device hardware clock, when the adapter supports hardware timestamping."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @param ts   The struct where time will be stored."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_get_device_clock(ring: *mut pfring, ts: *mut timespec) -> ::std::os::raw::c_int;
+    pub fn pfring_get_device_clock(ring: *mut pfring, ts: *mut timespec) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Sets the time in the device hardware clock, when the adapter supports hardware timestamping."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @param ts   The time to be set."]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_set_device_clock(ring: *mut pfring, ts: *mut timespec) -> ::std::os::raw::c_int;
+    pub fn pfring_set_device_clock(ring: *mut pfring, ts: *mut timespec) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Adjust the time in the device hardware clock with an offset, when the adapter supports hardware timestamping."]
@@ -1239,7 +1245,7 @@ extern "C" {
         ring: *mut pfring,
         offset: *mut timespec,
         sign: i8,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Synchronizes the ingress ring indexes/registers with the kernel."]
@@ -1253,21 +1259,21 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_send_last_rx_packet(
         ring: *mut pfring,
-        tx_interface_id: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        tx_interface_id: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the link status."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @return 1 if link is up, 0 otherwise."]
-    pub fn pfring_get_link_status(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_get_link_status(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Synchronizes the egress ring indexes/registers flushing enqueued packets."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @param"]
     #[doc = " @return 0 on success, a negative value otherwise."]
-    pub fn pfring_flush_tx_packets(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_flush_tx_packets(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Add a string to search in the packet payload (used for filtering)."]
@@ -1276,8 +1282,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_search_payload(
         ring: *mut pfring,
-        string_to_search: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        string_to_search: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Parse a packet."]
@@ -1295,7 +1301,7 @@ extern "C" {
         level: uint8_t,
         add_timestamp: uint8_t,
         add_hash: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the promiscuous mode flag to a device."]
@@ -1303,9 +1309,9 @@ extern "C" {
     #[doc = " @param set_promisc The promisc flag."]
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_if_promisc(
-        device: *const ::std::os::raw::c_char,
-        set_promisc: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        device: *const libc::c_char,
+        set_promisc: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set the promiscuous mode to bound device."]
@@ -1314,8 +1320,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_promisc(
         ring: *mut pfring,
-        set_promisc: ::std::os::raw::c_int,
-    ) -> ::std::os::raw::c_int;
+        set_promisc: libc::c_int,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Format a number."]
@@ -1326,10 +1332,10 @@ extern "C" {
     #[doc = " @return The produced string."]
     pub fn pfring_format_numbers(
         val: f64,
-        buf: *mut ::std::os::raw::c_char,
+        buf: *mut libc::c_char,
         buf_len: c_uint,
         add_decimals: uint8_t,
-    ) -> *mut ::std::os::raw::c_char;
+    ) -> *mut libc::c_char;
 }
 extern "C" {
     #[doc = " Enables rx and tx hardware timestamping, when the adapter supports it."]
@@ -1340,16 +1346,16 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_enable_hw_timestamp(
         ring: *mut pfring,
-        device_name: *mut ::std::os::raw::c_char,
+        device_name: *mut libc::c_char,
         enable_rx: uint8_t,
         enable_tx: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return the size of the MTU."]
     #[doc = " @param ring The PF_RING handle."]
     #[doc = " @return The MTU size on success, a negative value otherwise."]
-    pub fn pfring_get_mtu_size(ring: *mut pfring) -> ::std::os::raw::c_int;
+    pub fn pfring_get_mtu_size(ring: *mut pfring) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Return NIC settings: max packet length, num rx/tx slots (ZC only)."]
@@ -1359,7 +1365,7 @@ extern "C" {
     pub fn pfring_get_card_settings(
         ring: *mut pfring,
         settings: *mut pfring_card_settings,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Print a packet (the header with parsing info must be provided)."]
@@ -1369,11 +1375,11 @@ extern "C" {
     #[doc = " @param h        The header."]
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_print_parsed_pkt(
-        buff: *mut ::std::os::raw::c_char,
+        buff: *mut libc::c_char,
         buff_len: c_uint,
         p: *const c_uchar,
         h: *const pfring_pkthdr,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Print a packet."]
@@ -1383,12 +1389,12 @@ extern "C" {
     #[doc = " @param caplen   The packet length."]
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_print_pkt(
-        buff: *mut ::std::os::raw::c_char,
+        buff: *mut libc::c_char,
         buff_len: c_uint,
         p: *const c_uchar,
         len: c_uint,
         caplen: c_uint,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Receive a packet chunk, if enabled via pfring_open() flag."]
@@ -1399,10 +1405,10 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_recv_chunk(
         ring: *mut pfring,
-        chunk: *mut *mut ::std::os::raw::c_void,
+        chunk: *mut *mut libc::c_void,
         chunk_info: *mut pfring_chunk_info,
         wait_for_incoming_chunk: uint8_t,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Set a custom device name to which the socket is bound. This function should be called for devices that are not visible via ifconfig"]
@@ -1411,8 +1417,8 @@ extern "C" {
     #[doc = " @return 0 on success, a negative value otherwise."]
     pub fn pfring_set_bound_dev_name(
         ring: *mut pfring,
-        custom_dev_name: *mut ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
+        custom_dev_name: *mut libc::c_char,
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Reads a IXIA-formatted timestamp from an incoming packet and puts it into the timestamp variable."]
@@ -1424,7 +1430,7 @@ extern "C" {
         buffer: *mut c_uchar,
         buffer_len: uint32_t,
         ts: *mut timespec,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Strip a IXIA-formatted timestamp from an incoming packet. If the timestamp is found, the"]
@@ -1444,7 +1450,7 @@ extern "C" {
         buffer: *mut c_uchar,
         buffer_len: uint32_t,
         ts: *mut timespec,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     #[doc = " Strip an VSS/APCON-formatted timestamp from an incoming packet. If the timestamp is found, the"]
@@ -1474,17 +1480,17 @@ extern "C" {
 
 extern "C" {
     pub fn pfring_parse_bpf_filter(
-        filter_buffer: *mut ::std::os::raw::c_char,
+        filter_buffer: *mut libc::c_char,
         caplen: c_uint,
         filter: *mut pfring_bpf_program,
-    ) -> ::std::os::raw::c_int;
+    ) -> libc::c_int;
 }
 extern "C" {
     pub fn pfring_free_bpf_filter(filter: *mut pfring_bpf_program);
 }
 extern "C" {
     pub fn pfring_bpf_filter(
-        bpf_insn: *mut ::std::os::raw::c_void,
+        bpf_insn: *mut libc::c_void,
         buffer: *mut c_uchar,
         caplen: uint32_t,
         len: uint32_t,
@@ -1496,20 +1502,20 @@ extern "C" {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct pfring_module_info {
-    pub name: *mut ::std::os::raw::c_char,
+    pub name: *mut libc::c_char,
     pub open:
-        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> ::std::os::raw::c_int>,
+        ::std::option::Option<unsafe extern "C" fn(arg1: *mut pfring) -> libc::c_int>,
     pub findalldevs: ::std::option::Option<unsafe extern "C" fn() -> *mut pfring_if_t>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct thirdparty_func {
-    pub name: *const ::std::os::raw::c_char,
+    pub name: *const libc::c_char,
     pub ptr: ::std::option::Option<unsafe extern "C" fn()>,
 }
 extern "C" {
     pub fn pfring_thirdparty_lib_init(
-        thirdparty_lib_name: *const ::std::os::raw::c_char,
+        thirdparty_lib_name: *const libc::c_char,
         thirdparty_function_ptr: *mut thirdparty_func,
     );
 }
