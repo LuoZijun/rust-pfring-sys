@@ -1,8 +1,13 @@
 [package]
 name = "pfring-sys"
-version = "0.1.0"
-authors = ["luozijun <luozijun.assistant@gmail.com>"]
+version = "0.0.1"
 edition = "2018"
+authors = ["luozijun <luozijun.assistant@gmail.com>"]
+description = "Bindings to PF_RING for GNU/Linux"
+license = "MIT"
+homepage   = "https://github.com/luozijun/rust-pfring-sys"
+repository = "https://github.com/luozijun/rust-pfring-sys"
+documentation = "https://docs.rs/pfring-sys/*/x86_64-apple-darwin/pfring_sys"
 build = "build.rs"
 
 [dependencies]
