@@ -220,6 +220,22 @@ pub struct tunnel_info {
     pub tunneled_l4_src_port: uint16_t,
     pub tunneled_l4_dst_port: uint16_t,
 }
+impl core::fmt::Debug for tunnel_info {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        let src = if self.tunneled_ip_version == 4 { unsafe { format!("{:?}", self.tunneled_ip_src.v4) } } else { unsafe { format!("{:?}", self.tunneled_ip_src.v6.s6_addr) } };
+        let dst = if self.tunneled_ip_version == 4 { unsafe { format!("{:?}", self.tunneled_ip_dst.v4) } } else { unsafe { format!("{:?}", self.tunneled_ip_dst.v6.s6_addr) } };
+        write!(f, "tunnel_info: {{ tunnel_id: {:?}, tunneled_ip_version: {:?}, tunneled_proto: {:?}",
+            self.tunnel_id,
+            self.tunneled_ip_version,
+            self.tunneled_proto,)?;
+        write!(f, ", tunneled_ip_src: {}, tunneled_ip_dst: {}, tunneled_l4_src_port: {:?}, tunneled_l4_dst_port: {:?}",
+            src,
+            dst,
+            self.tunneled_l4_src_port,
+            self.tunneled_l4_dst_port)
+    }
+}
+
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
 pub struct mobile_ip_hdr {
@@ -252,6 +268,26 @@ pub struct pkt_parsing_info {
     pub last_matched_rule_id: i32,
     pub offset: pkt_offset,
 }
+
+impl core::fmt::Debug for pkt_parsing_info {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        let src = if self.ip_version == 4 { unsafe { format!("{:?}", self.ip_src.v4) } } else { unsafe { format!("{:?}", self.ip_src.v6.s6_addr) } };
+        let dst = if self.ip_version == 4 { unsafe { format!("{:?}", self.ip_dst.v4) } } else { unsafe { format!("{:?}", self.ip_dst.v6.s6_addr) } };
+
+        write!(f, "pkt_parsing_info {{ dmac: {:?}, smac: {:?}", self.dmac, self.smac)?;
+        write!(f, ", eth_type: {:?}, vlan_id: {:?}", self.eth_type, self.vlan_id)?;
+        write!(f, ", qinq_vlan_id: {:?}, ip_version: {:?} l3_proto: {:?}", self.qinq_vlan_id, self.ip_version, self.l3_proto)?;
+        write!(f, ", ip_tos: {:?}, ip_src: {}, ip_dst: {}", self.ip_tos, src, dst)?;
+        write!(f, ", l4_src_port: {:?}, l4_dst_port: {:?}, icmp_type: {:?}, icmp_code: {:?}",
+                    self.l4_src_port,
+                    self.l4_dst_port,
+                    self.icmp_type,
+                    self.icmp_code)?;
+        write!(f, ", tcp: {{ flags: {:?}, seq_num: {:?}, ack_num: {:?} }}", self.tcp.flags, self.tcp.seq_num, self.tcp.ack_num)?;
+        write!(f, ", tunnel: {:?}, last_matched_rule_id: {:?}, offset: {:?}", self.tunnel, self.last_matched_rule_id, self.offset)
+    }
+}
+
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct pkt_parsing_info__bindgen_ty_1 {
@@ -260,7 +296,7 @@ pub struct pkt_parsing_info__bindgen_ty_1 {
     pub ack_num: uint32_t,
 }
 #[repr(C, packed)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct pfring_extended_pkthdr {
     pub timestamp_ns: uint64_t,
     pub flags: uint32_t,
@@ -283,6 +319,16 @@ pub struct pfring_pkthdr {
     pub caplen: uint32_t,
     pub len: uint32_t,
     pub extended_hdr: pfring_extended_pkthdr,
+}
+impl core::fmt::Debug for pfring_pkthdr {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "pfring_pkthdr {{ ts: timeval {{ tv_sec: {:?}, tv_usec: {:?} }}",
+            self.ts.tv_sec,
+            self.ts.tv_usec)?;
+        write!(f, ", caplen: {:?}, len: {:?}, extended_hdr: {:?}",
+            self.caplen,
+            self.len, self.extended_hdr)
+    }
 }
 #[repr(C, packed)]
 #[derive(Copy, Clone)]

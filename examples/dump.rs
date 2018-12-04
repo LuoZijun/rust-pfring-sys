@@ -1,6 +1,7 @@
 extern crate libc;
 extern crate pfring_sys;
 
+use std::ptr;
 use std::mem;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -49,8 +50,9 @@ unsafe fn run () {
     println!("pfring_version_noring: {:?}", version);
     
     let ifname = CString::new("enp3s0").expect("CString::new failed");
-    let caplen = 1u32;
-    let flags = 0 | pfring_sys::PF_RING_DO_NOT_PARSE ;
+    let caplen = 1500u32;
+    // PF_RING_DO_NOT_PARSE  PF_RING_TIMESTAMP 
+    let flags = pfring_sys::PF_RING_DO_NOT_PARSE;
 
     let ring: *mut pfring_sys::__pfring = pfring_sys::pfring_open(ifname.as_ptr(), caplen, flags);
     println!("pfring_open({:?}): {:?}", ifname, ring);
@@ -61,20 +63,36 @@ unsafe fn run () {
     pfring_sys::pfring_version(ring, &mut version);
     println!("pfring_version: {:?}", version);
 
-    const BLEN: usize = 1500;
-    let buffer_ptr: *mut *mut u8 = [ [0u8; BLEN].as_mut_ptr(); BLEN ].as_mut_ptr();
 
-    let mut hdr: pfring_sys::pfring_pkthdr = mem::zeroed();
     let wait_for_incoming_packet = 1;
-    
-    println!("pfring_recv ... ", );
-    let ret = pfring_sys::pfring::pfring_recv(ring,
-                                      buffer_ptr,
-                                      BLEN as u32,
-                                      &mut hdr,
-                                      wait_for_incoming_packet );
-    println!("pfring_recv ret: {:?}", ret);
-    println!("{:?}", hdr.caplen);
+    let mut buffer_ptr: *mut u8 = ptr::null_mut();
+    let mut hdr: pfring_sys::pfring_pkthdr = mem::zeroed();
+    loop {
+        let ret = pfring_sys::pfring::pfring_recv(ring,
+                              &mut buffer_ptr,
+                              0,
+                              &mut hdr,
+                              wait_for_incoming_packet );
+        
+
+        if ret == 0 {
+            // WouldBlock
+            println!("WouldBlock", );
+            continue;
+        } else if ret == 1 {
+            // Success
+            let packet = std::slice::from_raw_parts(buffer_ptr, hdr.len as usize);
+            println!("{:?}", packet);
+
+            let mut stat: pfring_sys::pfring_stat = mem::zeroed();
+            pfring_sys::pfring_stats(ring, &mut stat);
+            println!("{:?}", stat);
+        } else if ret == -1 {
+            // Error
+            println!("Error", );
+            continue;
+        }
+    }
 }
 
 

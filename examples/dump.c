@@ -15,9 +15,9 @@
 #include "../include/linux/pf_ring.h"
 
 // 
-// cc examples/test.c -Wall -g -lpfring -lpcap -o test
+// cc examples/dump.c -Wall -g -lpfring -lpcap -o dump
 // 
-// cc test.o -L /usr/local/lib -lpfring -lpcap -o test
+// cc dump.o -L /usr/local/lib -lpfring -lpcap -o dump
 // 
 // apt install bison flex
 // make libring
@@ -74,17 +74,20 @@ int main(int argc, char const *argv[]) {
 
     u_int  len = 1500;
     u_int8_t wait_for_packet = 1;
-    u_char buffer[len];
     struct pfring_pkthdr hdr;
+
+    u_char buffer[len];
     u_char *buffer_p = buffer;
 
     memset(&hdr, 0, sizeof(hdr));
 
-    int rc = pfring_recv(pd, &buffer_p, len, &hdr, wait_for_packet);
 
-    if ( rc > 0 ) {
-        printf("pfring_recv ok.\n");
-    }
+    while (pfring_recv(pd, &buffer_p, len, &hdr, wait_for_packet) == 1) {
+        for (int i=0; i<hdr.len; i++) {
+            printf("%d, ", buffer[i]);
+        }
+        printf("\n");
+    }    
 
     // pfring_loop(pd, dummyProcessPacket, (u_char*)NULL, wait_for_packet);
     
