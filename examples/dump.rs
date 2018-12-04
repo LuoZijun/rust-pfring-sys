@@ -17,19 +17,19 @@ pub fn is_pfring_enabled() -> bool {
                 Ok(res) => {
                     for line in res.lines() {
                         if line.starts_with("pf_ring") {
-                            debug!("\n$ lsmod\n{}", line);
+                            println!("\n$ lsmod\n{}", line);
                             return true;
                         }
                     }
                     false
                 },
                 Err(e) => {
-                    error!("{:?}", output);
+                    println!("{:?}", output);
                     panic!("{:?}", e);
                 },
             }
         } else {
-            error!("{:?}", output);
+            println!("{:?}", output);
             panic!("failed to execute process: $ lsmod , exit status: {}", output.status);
         }
     } else {
@@ -89,7 +89,7 @@ fn main () {
             println!("[ERROR]: PermissionDenied");
             return ();
         }
-        
+
         run();
     }
 }
